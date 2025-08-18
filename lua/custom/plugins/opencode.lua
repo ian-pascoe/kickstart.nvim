@@ -5,49 +5,49 @@ return {
   opts = {},
   keys = {
     {
-      '<leader>ot',
+      '<leader>aot',
       function()
         require('opencode').toggle()
       end,
-      desc = '[O]pencode: [T]oggle',
+      desc = '[T]oggle',
     },
     {
-      '<leader>oa',
+      '<leader>aoa',
       function()
         require('opencode').ask '@cursor: '
       end,
-      desc = '[O]pencode: [A]sk ',
+      desc = '[A]sk ',
       mode = 'n',
     },
     {
-      '<leader>oa',
+      '<leader>aoa',
       function()
         require('opencode').ask '@selection: '
       end,
-      desc = '[O]pencode: [A]sk About Selection',
+      desc = '[A]sk About Selection',
       mode = 'v',
     },
     {
-      '<leader>op',
+      '<leader>aop',
       function()
         require('opencode').select_prompt()
       end,
-      desc = '[O]pencode: Select [P]rompt',
+      desc = 'Select [P]rompt',
       mode = { 'n', 'v' },
     },
     {
-      '<leader>on',
+      '<leader>aon',
       function()
         require('opencode').command 'session_new'
       end,
-      desc = '[O]pencode: [N]ew Session',
+      desc = '[N]ew Session',
     },
     {
-      '<leader>oy',
+      '<leader>aoy',
       function()
         require('opencode').command 'messages_copy'
       end,
-      desc = '[O]pencode: [Y]ank Last Message',
+      desc = '[Y]ank Last Message',
     },
   },
 }

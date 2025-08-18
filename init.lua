@@ -278,9 +278,10 @@ require('lazy').setup({
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
-        { '<leader>c', group = '[C]ode Companion' },
+        { '<leader>a', group = '[A]I' },
         { '<leader>q', group = '[Q]uit' },
-        { '<leader>o', group = '[O]pencode' },
+        { '<leader>ao', group = '[A]I: [O]pencode' },
+        { '<leader>ac', group = '[A]I: [C]ode Companion' },
       },
     },
   },
@@ -933,7 +934,7 @@ require('lazy').setup({
   require 'kickstart.plugins.debug',
   require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
-  require 'kickstart.plugins.autopairs',
+  -- require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
