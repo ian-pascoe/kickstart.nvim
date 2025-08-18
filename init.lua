@@ -98,8 +98,8 @@ end, { desc = '[Q]uit [A]ll Windows' })
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror message' })
-vim.keymap.set('n', '<leader>d', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>de', vim.diagnostic.open_float, { desc = 'Show [D]iagnostic [E]rror message' })
+vim.keymap.set('n', '<leader>dq', vim.diagnostic.setloclist, { desc = 'Open [D]iagnostic [Q]uickfix list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -278,10 +278,11 @@ require('lazy').setup({
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
-        { '<leader>a', group = '[A]I' },
+        { '<leader>d', group = '[D]iagnostic' },
         { '<leader>q', group = '[Q]uit' },
-        { '<leader>ao', group = '[A]I: [O]pencode' },
-        { '<leader>ac', group = '[A]I: [C]ode Companion' },
+        { '<leader>a', group = '[A]I' },
+        { '<leader>ao', group = '[O]pencode' },
+        { '<leader>ac', group = '[C]ode Companion' },
       },
     },
   },
