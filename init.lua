@@ -87,13 +87,13 @@ vim.o.confirm = true
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
--- Netrw keymap
-vim.keymap.set('n', '<leader>\\', '<cmd>Ex<CR>', { desc = '[E]xplore [N]etrw' })
-
 -- Quit all keymap
 vim.keymap.set('n', '<leader>qa', function()
   vim.cmd.quitall()
 end, { desc = '[Q]uit [A]ll Windows' })
+
+-- Refresh buffer if file changed outside nvim
+vim.keymap.set('n', '<leader>r', '<cmd>checktime<CR>', { desc = '[R]efresh buffer from disk' })
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
@@ -202,6 +202,9 @@ require('lazy').setup({
 
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
+    dependencies = {
+      'echasnovski/mini.icons',
+    },
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
       -- delay between pressing a key and opening which-key (milliseconds)
@@ -256,6 +259,8 @@ require('lazy').setup({
         { '<leader>a', group = '[A]I' },
         { '<leader>ao', group = '[O]pencode' },
         { '<leader>ac', group = '[C]ode Companion' },
+        { '<leader>z', group = '[Z]en' },
+        { '<leader>h', group = '[H]arpoon' },
       },
     },
   },
