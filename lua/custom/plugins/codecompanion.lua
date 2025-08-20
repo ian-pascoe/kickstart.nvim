@@ -27,8 +27,8 @@ return {
         },
       },
     }
-    vim.keymap.set('n', '<leader>act', function()
+    vim.keymap.set('n', '<leader>acc', function()
       require('codecompanion').toggle()
-    end, { desc = '[C]ode Companion: [T]oggle' })
+    end, { desc = 'Toggle [C]ode [C]ompanion' })
   end,
 }

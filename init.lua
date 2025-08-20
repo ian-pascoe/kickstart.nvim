@@ -16,7 +16,7 @@ vim.g.have_nerd_font = true
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
@@ -87,19 +87,15 @@ vim.o.confirm = true
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
--- Quit all keymap
-vim.keymap.set('n', '<leader>qa', function()
-  vim.cmd.quitall()
-end, { desc = '[Q]uit [A]ll Windows' })
-
--- Refresh buffer if file changed outside nvim
-vim.keymap.set('n', '<leader>r', '<cmd>checktime<CR>', { desc = '[R]efresh buffer from disk' })
+-- Buffer keymaps
+vim.keymap.set('n', '<leader>bd', '<CMD>bdel<CR>', { desc = '[D]elete' })
+vim.keymap.set('n', '<leader>br', '<CMD>checktime<CR>', { desc = '[R]efresh' })
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
-vim.keymap.set('n', '<leader>de', vim.diagnostic.open_float, { desc = 'Show [D]iagnostic [E]rror message' })
-vim.keymap.set('n', '<leader>dq', vim.diagnostic.setloclist, { desc = 'Open [D]iagnostic [Q]uickfix list' })
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Previous [D]iagnostic message' })
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Next [D]iagnostic message' })
+vim.keymap.set('n', '<leader>ce', vim.diagnostic.open_float, { desc = 'Show [E]rror message' })
+vim.keymap.set('n', '<leader>cq', vim.diagnostic.setloclist, { desc = 'Open [Q]uickfix list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -135,6 +131,10 @@ vim.keymap.set('n', '<C-S-h>', '<C-w>H', { desc = 'Move window to the left' })
 vim.keymap.set('n', '<C-S-l>', '<C-w>L', { desc = 'Move window to the right' })
 vim.keymap.set('n', '<C-S-j>', '<C-w>J', { desc = 'Move window to the lower' })
 vim.keymap.set('n', '<C-S-k>', '<C-w>K', { desc = 'Move window to the upper' })
+
+-- Better page-up/down
+vim.keymap.set('n', '<C-d>', '<C-d>zz', { noremap = true })
+vim.keymap.set('n', '<C-u>', '<C-u>zz', { noremap = true })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -254,12 +254,13 @@ require('lazy').setup({
         { '<leader>g', group = '[G]it' },
         { '<leader>gh', group = '[G]it [H]unk', mode = { 'n', 'v' } },
         { '<leader>gt', group = '[G]it [T]oggle' },
-        { '<leader>d', group = '[D]iagnostic' },
-        { '<leader>q', group = '[Q]uit' },
+        { '<leader>b', group = '[B]uffer' },
+        { '<leader>f', group = '[F]ile' },
+        { '<leader>c', group = '[C]ode' },
+        { '<leader>d', group = '[D]ebug' },
         { '<leader>a', group = '[A]I' },
         { '<leader>ao', group = '[O]pencode' },
         { '<leader>ac', group = '[C]ode Companion' },
-        { '<leader>z', group = '[Z]en' },
         { '<leader>h', group = '[H]arpoon' },
       },
     },
@@ -373,6 +374,13 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[S]earch [N]eovim files' })
+
+      vim.keymap.set(
+        'v',
+        '<leader>ss',
+        "\"zy<CMD>exec 'Telescope live_grep default_text=' . escape(@z, ' ')<CR><ESC>",
+        { desc = '[S]earch [S]election', noremap = true, silent = true }
+      )
     end,
   },
 
@@ -585,7 +593,7 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {},
         gopls = {},
         pyright = {},
         rust_analyzer = {},
@@ -613,6 +621,8 @@ require('lazy').setup({
           'typescriptreact',
           'vue',
         },
+        docker_language_server = {},
+        lemminx = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -655,6 +665,8 @@ require('lazy').setup({
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'markdownlint',
+        'yamlfmt',
+        'xmlformatter',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -681,7 +693,7 @@ require('lazy').setup({
     cmd = { 'ConformInfo' },
     keys = {
       {
-        '<leader>f',
+        '<leader>cf',
         function()
           require('conform').format { async = true, lsp_format = 'fallback' }
         end,
@@ -709,6 +721,8 @@ require('lazy').setup({
         lua = { 'stylua' },
         javascript = { 'biome' },
         typescript = { 'biome' },
+        yaml = { 'yamlfmt' },
+        xml = { 'xmlformatter' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -726,26 +740,16 @@ require('lazy').setup({
       -- Snippet Engine
       {
         'L3MON4D3/LuaSnip',
-        version = '2.*',
-        build = (function()
-          -- Build Step is needed for regex support in snippets.
-          -- This step is not supported in many windows environments.
-          -- Remove the below condition to re-enable on windows.
-          if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-            return
-          end
-          return 'make install_jsregexp'
-        end)(),
         dependencies = {
           -- `friendly-snippets` contains a variety of premade snippets.
           --    See the README about individual language/framework/plugin snippets:
           --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
+          {
+            'rafamadriz/friendly-snippets',
+            config = function()
+              require('luasnip.loaders.from_vscode').lazy_load()
+            end,
+          },
         },
         opts = {},
       },
@@ -824,14 +828,25 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'catppuccin/nvim',
-    name = 'catppuccin',
+    'rose-pine/neovim',
+    name = 'rose-pine',
+    lazy = false,
     priority = 1000, -- Make sure to load this before all the other start plugins.
+    dependencies = {
+      {
+        'xiyaowong/transparent.nvim',
+        lazy = false,
+        opts = {
+          extra_groups = { 'NormalFloat', 'NvimTreeNormal', 'TelescopeNormal', 'TelescopeBorder' },
+        },
+      },
+    },
     config = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'catppuccin-mocha'
+      vim.cmd.colorscheme 'rose-pine'
+      vim.cmd.TransparentEnable()
     end,
   },
 

@@ -12,7 +12,7 @@ return {
     local harpoon_mark = require 'harpoon.mark'
 
     vim.keymap.set('n', '<leader>ha', harpoon_mark.add_file, { desc = '[A]dd file' })
-    vim.keymap.set('n', '<leader>ht', harpoon_ui.toggle_quick_menu, { desc = '[T]oggle' })
+    vim.keymap.set('n', '<leader>hh', harpoon_ui.toggle_quick_menu, { desc = 'Toggle' })
     vim.keymap.set('n', '<leader>hs', '<CMD>Telescope harpoon marks<CR>', { desc = '[S]earch marked' })
     vim.keymap.set('n', '[h', harpoon_ui.nav_prev, { desc = 'Harpoon: navigate prev' })
     vim.keymap.set('n', ']h', harpoon_ui.nav_next, { desc = 'Harpoon: navigate next' })

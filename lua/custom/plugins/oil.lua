@@ -6,6 +6,6 @@ return {
   lazy = false,
   config = function()
     require('oil').setup()
-    vim.keymap.set('n', '<leader>\\', '<CMD>Oil<CR>', { desc = 'Oil File Tree' })
+    vim.keymap.set('n', '<leader>\\', '<CMD>Oil<CR>', { desc = '[\\] File Tree' })
   end,
 }
