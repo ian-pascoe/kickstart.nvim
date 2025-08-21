@@ -607,19 +607,21 @@ require('lazy').setup({
         },
         yamlls = {},
         biome = {
-          'astro',
-          'css',
-          'graphql',
-          'html',
-          'javascript',
-          'javascriptreact',
-          'json',
-          'jsonc',
-          'svelte',
-          'typescript',
-          'typescript.tsx',
-          'typescriptreact',
-          'vue',
+          filetypes = {
+            'astro',
+            'css',
+            'graphql',
+            'html',
+            'javascript',
+            'javascriptreact',
+            'json',
+            'jsonc',
+            'svelte',
+            'typescript',
+            'typescript.tsx',
+            'typescriptreact',
+            'vue',
+          }
         },
         docker_language_server = {},
         lemminx = {},
@@ -684,6 +686,11 @@ require('lazy').setup({
           end,
         },
       }
+
+      require('lspconfig')['nixd'].setup({
+        cmd = { 'nixd' },
+        filetypes = { 'nix' },
+      })
     end,
   },
 
