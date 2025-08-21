@@ -690,6 +690,7 @@ require('lazy').setup({
       require('lspconfig')['nixd'].setup({
         cmd = { 'nixd' },
         filetypes = { 'nix' },
+        capabilities = capabilities,
       })
     end,
   },
