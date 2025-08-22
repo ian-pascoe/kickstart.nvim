@@ -178,7 +178,7 @@ rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'Darazaki/indent-o-matic',
+  'tpope/vim-sleuth',
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -621,7 +621,7 @@ require('lazy').setup({
             'typescript.tsx',
             'typescriptreact',
             'vue',
-          }
+          },
         },
         docker_language_server = {},
         lemminx = {},
@@ -665,6 +665,7 @@ require('lazy').setup({
       -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
+        'alejandra',
         'stylua', -- Used to format Lua code
         'markdownlint',
         'yamlfmt',
@@ -687,11 +688,11 @@ require('lazy').setup({
         },
       }
 
-      require('lspconfig')['nixd'].setup({
+      require('lspconfig')['nixd'].setup {
         cmd = { 'nixd' },
         filetypes = { 'nix' },
         capabilities = capabilities,
-      })
+      }
     end,
   },
 
@@ -726,9 +727,16 @@ require('lazy').setup({
         end
       end,
       formatters_by_ft = {
+        css = { 'biome', 'prettierd', 'prettier', stop_after_first = true },
         lua = { 'stylua' },
-        javascript = { 'biome' },
-        typescript = { 'biome' },
+        html = { 'biome', 'prettierd', 'prettier', stop_after_first = true },
+        javascript = { 'biome', 'prettierd', 'prettier', stop_after_first = true },
+        javascriptreact = { 'biome', 'prettierd', 'prettier', stop_after_first = true },
+        json = { 'biome', 'prettierd', 'prettier', stop_after_first = true },
+        nix = { 'alejandra' },
+        typescript = { 'biome', 'prettierd', 'prettier', stop_after_first = true },
+        typescriptreact = { 'biome', 'prettierd', 'prettier', stop_after_first = true },
+        ['typescript.tsx'] = { 'biome', 'prettierd', 'prettier', stop_after_first = true },
         yaml = { 'yamlfmt' },
         xml = { 'xmlformatter' },
         -- Conform can also run multiple formatters sequentially
@@ -934,7 +942,6 @@ require('lazy').setup({
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
   require 'kickstart.plugins.debug',
-  require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
