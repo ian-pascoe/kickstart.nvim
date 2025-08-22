@@ -150,6 +150,12 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- Jenkinsfile autocmd
+vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
+  pattern = '*.Jenkinsfile',
+  command = 'set filetype=groovy',
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -625,6 +631,12 @@ require('lazy').setup({
         },
         docker_language_server = {},
         lemminx = {},
+        groovyls = {
+          filetypes = {
+            'groovy',
+            'jenkinsfile',
+          },
+        },
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:

@@ -4,4 +4,8 @@
 -- See the kickstart.nvim README for more information
 return {
   'ThePrimeagen/vim-be-good',
+  {
+    'ckipp01/nvim-jenkinsfile-linter',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+  },
 }
