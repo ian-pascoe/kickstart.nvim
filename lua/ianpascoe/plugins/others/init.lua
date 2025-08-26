@@ -3,7 +3,10 @@
 --
 -- See the kickstart.nvim README for more information
 return {
-  'ThePrimeagen/vim-be-good',
+  {
+    'ThePrimeagen/vim-be-good',
+    event = 'VeryLazy',
+  },
   {
     'ckipp01/nvim-jenkinsfile-linter',
     dependencies = { 'nvim-lua/plenary.nvim' },

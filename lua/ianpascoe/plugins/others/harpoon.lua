@@ -4,6 +4,7 @@ return {
     'nvim-lua/plenary.nvim',
     'nvim-telescope/telescope.nvim',
   },
+  event = { 'LazyFile', 'VeryLazy' },
   config = function()
     require('harpoon').setup {}
     pcall(require('telescope').load_extension, 'harpoon')

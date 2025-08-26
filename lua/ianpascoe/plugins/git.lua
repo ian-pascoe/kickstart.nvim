@@ -1,10 +1,21 @@
--- Adds git related signs to the gutter, as well as utilities for managing changes
--- NOTE: gitsigns is already included in init.lua but contains only the base
--- config. This will add also the recommended keymaps.
-
 return {
   {
+    'NeogitOrg/neogit',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'sindrets/diffview.nvim',
+      'nvim-telescope/telescope.nvim',
+    },
+    event = 'VeryLazy',
+    cmd = 'Neogit',
+    config = function()
+      require('neogit').setup {}
+      vim.keymap.set('n', '<leader>gg', '<CMD>Neogit<CR>', { desc = '[G] Neogit' })
+    end,
+  },
+  {
     'lewis6991/gitsigns.nvim',
+    event = 'LazyFile',
     opts = {
       on_attach = function(bufnr)
         local gitsigns = require 'gitsigns'
