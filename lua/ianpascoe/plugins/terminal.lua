@@ -1,12 +1,13 @@
 return {
   {
     'akinsho/toggleterm.nvim',
-    event = "VimEnter",
+    event = 'VimEnter',
     config = function()
       local tterm = require 'toggleterm'
       tterm.setup {}
 
-      local map = vim.keymap.set
+      local map = Util.keymap.set
+
       map('n', '<C-\\>', function()
         tterm.toggle()
       end, { desc = 'Toggle terminal' })
@@ -24,7 +25,7 @@ return {
       end, { desc = '[T]oggle [A]ll terminals' })
 
       -- Dynamic keymap for <leader>t{number} to navigate to terminal by index
-      vim.keymap.set('n', '<leader>t', function()
+      map('n', '<leader>t', function()
         local num = vim.fn.getchar()
         local char = vim.fn.nr2char(num)
         local term_index = tonumber(char)
@@ -44,6 +45,7 @@ return {
       end
 
       vim.api.nvim_create_autocmd('TermOpen', {
+        group = vim.api.nvim_create_augroup('set_terminal_keymaps', { clear = true }),
         pattern = 'term://*',
         callback = set_terminal_keymaps,
       })

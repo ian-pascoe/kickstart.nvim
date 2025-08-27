@@ -28,6 +28,13 @@ function M.setup()
       lazy = true,
       version = '*',
     },
+    install = {
+      colorscheme = { 'rose-pine', 'habamax' },
+    },
+    change_detection = {
+      enabled = true,
+      notify = false,
+    },
   }
 end
 

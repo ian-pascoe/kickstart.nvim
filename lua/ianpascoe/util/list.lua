@@ -1,3 +1,4 @@
+---@class ianpascoe.util.list
 local M = {}
 
 function M.dedup(list)

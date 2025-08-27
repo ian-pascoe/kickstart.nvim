@@ -1,8 +1,7 @@
+require('ianpascoe.config').init()
+
 return {
-  {
-    'tpope/vim-sleuth',
-    event = 'LazyFile',
-  },
+  { 'folke/lazy.nvim' },
   { -- Highlight todo, notes, etc in comments
     'folke/todo-comments.nvim',
     event = 'LazyFile',
@@ -10,6 +9,16 @@ return {
     opts = { signs = false },
   },
   {
-    import = 'ianpascoe.plugins.others',
+    'folke/snacks.nvim',
+    priority = 1000,
+    lazy = false,
+    ---@type snacks.Config
+    opts = {},
+    config = function(_, opts)
+      require('snacks').setup(opts)
+    end,
+  },
+  {
+    import = 'ianpascoe.plugins.other',
   },
 }

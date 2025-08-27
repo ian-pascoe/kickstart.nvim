@@ -9,8 +9,11 @@ return {
     event = 'VeryLazy',
     cmd = 'Neogit',
     config = function()
-      require('neogit').setup {}
-      vim.keymap.set('n', '<leader>gg', '<CMD>Neogit<CR>', { desc = '[G] Neogit' })
+      local neogit = require 'neogit'
+      neogit.setup {}
+      Util.keymap.set('n', '<leader>gg', function()
+        neogit.open {}
+      end, { desc = '[G] Neogit' })
     end,
   },
   {
@@ -23,7 +26,7 @@ return {
         local function map(mode, l, r, opts)
           opts = opts or {}
           opts.buffer = bufnr
-          vim.keymap.set(mode, l, r, opts)
+          Util.keymap.set(mode, l, r, opts)
         end
 
         -- Navigation

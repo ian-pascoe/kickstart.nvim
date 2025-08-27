@@ -1,14 +1,10 @@
--- [[ Basic Autocommands ]]
---  See `:help lua-guide-autocommands`
+---@class ianpascoe.config.autocmds
 local M = {}
 
 function M.setup()
-  -- Highlight when yanking (copying) text
-  --  Try it with `yap` in normal mode
-  --  See `:help vim.hl.on_yank()`
   vim.api.nvim_create_autocmd('TextYankPost', {
     desc = 'Highlight when yanking (copying) text',
-    group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
+    group = vim.api.nvim_create_augroup('highlight_yank', { clear = true }),
     callback = function()
       vim.hl.on_yank()
     end,
@@ -16,6 +12,8 @@ function M.setup()
 
   -- Jenkinsfile autocmd
   vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
+    desc = 'Set filetype to groovy for Jenkinsfiles',
+    group = vim.api.nvim_create_augroup('jenkinsfile_ft', { clear = true }),
     pattern = { '*.Jenkinsfile', 'Jenkinsfile' },
     command = 'set filetype=groovy',
   })

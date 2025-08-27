@@ -1,3 +1,5 @@
+
+---@class ianpascoe.config.options
 local M = {}
 
 function M.setup()

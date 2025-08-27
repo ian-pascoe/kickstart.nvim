@@ -3,7 +3,6 @@ return {
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     event = { 'LazyFile', 'VeryLazy' },
-    lazy = vim.fn.argc(-1) == 0,
     init = function(plugin)
       -- PERF: add nvim-treesitter queries to the rtp and it's custom query predicates early
       -- This is needed because a bunch of plugins no longer `require("nvim-treesitter")`, which
@@ -14,17 +13,14 @@ return {
       require 'nvim-treesitter.query_predicates'
     end,
     cmd = { 'TSUpdateSync', 'TSUpdate', 'TSInstall' },
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
-    ---@type TSConfig
-    ---@diagnostic disable-next-line: missing-fields
-    opts = {
-      highlight = { enable = true },
-      indent = { enable = true },
-      ensure_installed = {},
-    },
+    opts = function(_, opts)
+      opts.highlight = vim.tbl_deep_extend('force', opts.highlight or {}, { enable = true })
+      opts.indent = vim.tbl_deep_extend('force', opts.indent or {}, { enable = true })
+      opts.ensure_installed = opts.ensure_installed or {}
+    end,
     config = function(_, opts)
       if type(opts.ensure_installed) == 'table' then
-        opts.ensure_installed = Utils.dedup(opts.ensure_installed)
+        opts.ensure_installed = Util.list.dedup(opts.ensure_installed)
       end
       require('nvim-treesitter.configs').setup(opts)
     end,

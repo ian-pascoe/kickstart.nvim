@@ -1,6 +1,9 @@
 return {
-
-  { -- Autoformat
+  {
+    'tpope/vim-sleuth',
+    event = 'LazyFile',
+  },
+  {
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
     cmd = { 'ConformInfo' },
@@ -21,13 +24,14 @@ return {
         end
     end,
     config = function(_, opts)
-      require('conform').setup(opts)
-      vim.keymap.set('n', '<leader>cf', function()
-        require('conform').format { async = true, lsp_format = 'fallback' }
+      local conform = require 'conform'
+      conform.setup(opts)
+      Util.keymap.set('n', '<leader>cf', function()
+        conform.format { async = true, lsp_format = 'fallback' }
       end, { desc = '[F]ormat buffer' })
     end,
   },
   {
-    import = 'ianpascoe.plugins.format',
+    import = 'ianpascoe.plugins.formatting',
   },
 }

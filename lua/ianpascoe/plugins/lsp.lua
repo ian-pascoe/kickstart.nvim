@@ -17,12 +17,11 @@ return {
     dependencies = { 'mason-org/mason.nvim' },
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
-      return opts
     end,
     config = function(_, opts)
-      -- Setup is handled in lspconfig config function
+      require('mason-tool-installer').setup(opts)
+      vim.cmd.MasonToolsUpdate()
 
-      Util.info("Ensuring installation of tools: " .. table.concat(opts.ensure_installed, ", "), { title = "Mason Tools" })
       vim.api.nvim_create_autocmd('User', {
         group = vim.api.nvim_create_augroup('mason_tool_installer', { clear = true }),
         pattern = 'MasonToolsUpdateCompleted',
@@ -56,7 +55,6 @@ return {
       opts.servers = opts.servers or {}
       opts.capabilities = opts.capabilities or {}
       opts.setup = opts.setup or {}
-      return opts
     end,
     config = function(_, opts)
       vim.api.nvim_create_autocmd('LspAttach', {
@@ -151,7 +149,8 @@ return {
       }
 
       local servers = opts.servers or {}
-      local capabilities = vim.tbl_deep_extend('force', {}, require('blink.cmp').get_lsp_capabilities(), opts.capabilities or {})
+      local capabilities = vim.tbl_deep_extend('force', {}, require('blink.cmp').get_lsp_capabilities(),
+        opts.capabilities or {})
 
       local function setup(server)
         local server_opts = vim.tbl_deep_extend('force', {
@@ -199,10 +198,10 @@ return {
         ensure_installed = vim.tbl_deep_extend('force', ensure_installed, mtiPluginOpts.ensure_installed or {})
       end
 
-      Util.info("Installing LSP servers: " .. table.concat(ensure_installed, ", "), { title = "Mason LSP" })
       require('mason-tool-installer').setup {
         ensure_installed = ensure_installed,
       }
+      vim.cmd.MasonToolsUpdate()
 
       require('mason-lspconfig').setup {
         ensure_installed = {}, -- handled in mason-tool-installer
