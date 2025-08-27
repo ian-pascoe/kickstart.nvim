@@ -2,34 +2,41 @@ return {
   -- LSP Plugins
   {
     'mason-org/mason.nvim',
-    event = 'VimEnter',
+    build = ':MasonUpdate',
+    cmd = 'Mason',
     opts = {},
     config = function(_, opts)
       require('mason').setup(opts)
-      vim.keymap.set('n', '<leader>cm', '<cmd>Mason<cr>', { desc = '[M]ason' })
+      Util.keymap.set('n', '<leader>cm', '<cmd>Mason<cr>', { desc = '[M]ason' })
     end,
   },
   {
     'WhoIsSethDaniel/mason-tool-installer.nvim',
-    event = 'VimEnter',
+    build = ':MasonToolsUpdate',
+    cmd = { 'MasonToolsInstall', 'MasonToolsInstallSync', 'MasonToolsUpdate', 'MasonToolsUpdateSync', 'MasonToolsClean' },
     dependencies = { 'mason-org/mason.nvim' },
-    opts = {
-      ensure_installed = {},
-    },
-    config = function(_, opts)
-      if type(opts.ensure_installed) == 'table' then
-        opts.ensure_installed = Utils.dedup(opts.ensure_installed)
-      end
-      require('mason-tool-installer').setup(opts)
+    opts = function(_, opts)
+      opts.ensure_installed = opts.ensure_installed or {}
+      return opts
     end,
-  },
-  {
-    'mason-org/mason-lspconfig.nvim',
-    config = function() end,
-  },
-  {
-    'j-hui/fidget.nvim',
-    opts = { notification = { window = { winblend = 0 } } },
+    config = function(_, opts)
+      -- Setup is handled in lspconfig config function
+
+      Util.info("Ensuring installation of tools: " .. table.concat(opts.ensure_installed, ", "), { title = "Mason Tools" })
+      vim.api.nvim_create_autocmd('User', {
+        group = vim.api.nvim_create_augroup('mason_tool_installer', { clear = true }),
+        pattern = 'MasonToolsUpdateCompleted',
+        callback = function()
+          vim.defer_fn(function()
+            -- trigger FileType event to possibly load this newly installed LSP server
+            require('lazy.core.handler.event').trigger {
+              event = 'FileType',
+              buf = vim.api.nvim_get_current_buf(),
+            }
+          end, 100)
+        end,
+      })
+    end,
   },
   {
     -- Main LSP Configuration
@@ -37,32 +44,37 @@ return {
     event = 'LazyFile',
     dependencies = {
       'mason-org/mason.nvim',
-      'mason-org/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
-      'j-hui/fidget.nvim',
+      { 'mason-org/mason-lspconfig.nvim', config = function() end },
+      {
+        'j-hui/fidget.nvim',
+        opts = { notification = { window = { winblend = 0 } } },
+      },
       'saghen/blink.cmp',
     },
-    opts = {
-      servers = {},
-    },
+    opts = function(_, opts)
+      opts.servers = opts.servers or {}
+      opts.capabilities = opts.capabilities or {}
+      opts.setup = opts.setup or {}
+      return opts
+    end,
     config = function(_, opts)
       vim.api.nvim_create_autocmd('LspAttach', {
-        group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
+        group = vim.api.nvim_create_augroup('lsp_attach', { clear = true }),
         callback = function(event)
-          local map = function(keys, func, desc, mode)
-            mode = mode or 'n'
-            vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+          local map = function(mode, keys, func, desc)
+            Util.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
 
-          map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
-          map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
-          map('grr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-          map('gri', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-          map('grd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-          map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-          map('gO', require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
-          map('gW', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
-          map('grt', require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
+          map('n', 'grn', vim.lsp.buf.rename, '[R]e[n]ame')
+          map({ 'n', 'x' }, 'gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction')
+          map('n', 'grr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+          map('n', 'gri', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+          map('n', 'grd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+          map('n', 'grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+          map('n', 'gO', require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
+          map('n', 'gW', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
+          map('n', 'grt', require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
 
           -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
           ---@param client vim.lsp.Client
@@ -79,7 +91,7 @@ return {
 
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
-            local highlight_augroup = vim.api.nvim_create_augroup('lsp-highlight', { clear = false })
+            local highlight_augroup = vim.api.nvim_create_augroup('lsp_highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
               group = highlight_augroup,
@@ -93,16 +105,16 @@ return {
             })
 
             vim.api.nvim_create_autocmd('LspDetach', {
-              group = vim.api.nvim_create_augroup('lsp-detach', { clear = true }),
+              group = vim.api.nvim_create_augroup('lsp_detach', { clear = true }),
               callback = function(event2)
                 vim.lsp.buf.clear_references()
-                vim.api.nvim_clear_autocmds { group = 'lsp-highlight', buffer = event2.buf }
+                vim.api.nvim_clear_autocmds { group = 'lsp_highlight', buffer = event2.buf }
               end,
             })
           end
 
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
-            map('gh', function()
+            map('n', 'gh', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, 'Toggle Inlay [H]ints')
           end
@@ -138,36 +150,63 @@ return {
         },
       }
 
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
-      local all_mslp_servers = vim.tbl_keys(require('mason-lspconfig.mappings').get_mason_map().lspconfig_to_package)
+      local servers = opts.servers or {}
+      local capabilities = vim.tbl_deep_extend('force', {}, require('blink.cmp').get_lsp_capabilities(), opts.capabilities or {})
+
+      local function setup(server)
+        local server_opts = vim.tbl_deep_extend('force', {
+          capabilities = vim.deepcopy(capabilities),
+        }, servers[server] == true and {} or servers[server] or {})
+        if server_opts.enabled == false then
+          return
+        end
+
+        if opts.setup[server] then
+          if opts.setup[server](server, server_opts) then
+            return
+          end
+        elseif opts.setup['*'] then
+          if opts.setup['*'](server, server_opts) then
+            return
+          end
+        end
+        require('lspconfig')[server].setup(server_opts)
+      end
 
       local ensure_installed = {}
-      for server, server_opts in pairs(opts.servers or {}) do
+      local all_mslp_servers = vim.tbl_keys(require('mason-lspconfig.mappings').get_mason_map().lspconfig_to_package)
+      for server, server_opts in pairs(servers) do
         if server_opts then
           server_opts = server_opts == true and {} or server_opts
           if server_opts.enabled ~= false then
-            if server_opts.mason ~= false or not vim.tbl_contains(all_mslp_servers, server) then
-              server_opts.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server_opts.capabilities or {})
-              require('lspconfig')[server].setup(server_opts)
+            local is_mason_available = vim.tbl_contains(all_mslp_servers, server)
+            if server_opts.mason == false or not is_mason_available then
+              -- Not managed by mason (explicitly disabled or unsupported) -> setup immediately
+              setup(server)
             else
+              -- Managed by mason -> ensure installation and let mason-lspconfig call handler
               ensure_installed[#ensure_installed + 1] = server
             end
           end
         end
       end
 
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+      -- Get existing ensure_installed from mason-tool-installer plugin
+      local mtiPlugin = require('lazy.core.config').spec.plugins['WhoIsSethDaniel/mason-tool-installer.nvim']
+      if mtiPlugin then
+        local Plugin = require 'lazy.core.plugin'
+        local mtiPluginOpts = Plugin.values(mtiPlugin, 'opts', false)
+        ensure_installed = vim.tbl_deep_extend('force', ensure_installed, mtiPluginOpts.ensure_installed or {})
+      end
+
+      Util.info("Installing LSP servers: " .. table.concat(ensure_installed, ", "), { title = "Mason LSP" })
+      require('mason-tool-installer').setup {
+        ensure_installed = ensure_installed,
+      }
 
       require('mason-lspconfig').setup {
-        ensure_installed = {}, -- mason-tool-installer handles this
-        automatic_installation = false,
-        handlers = {
-          function(server)
-            local server_opts = opts.servers[server] or {}
-            server_opts.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server_opts.capabilities or {})
-            require('lspconfig')[server].setup(server_opts)
-          end,
-        },
+        ensure_installed = {}, -- handled in mason-tool-installer
+        handlers = { setup },
       }
     end,
   },
