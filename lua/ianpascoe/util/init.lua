@@ -3,6 +3,8 @@ local LazyUtil = require 'lazy.core.util'
 ---@class ianpascoe.util: LazyUtilCore
 ---@field keymap ianpascoe.util.keymap
 ---@field list ianpascoe.util.list
+---@field pick ianpascoe.util.pick
+---@field root ianpascoe.util.root
 ---@field table ianpascoe.util.table
 local M = {}
 
