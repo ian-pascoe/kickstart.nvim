@@ -1,1 +1,1 @@
-require('ianpascoe').setup()
+require('spiritvim.init').setup()
