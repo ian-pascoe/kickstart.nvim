@@ -41,10 +41,10 @@ return {
     ft = 'lua',
     opts = {
       library = {
-        {
-          path = '${3rd}/luv/library',
-          words = { 'vim%.uv' },
-        },
+        { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
+        { path = 'ianpascoe', words = { 'Util' } },
+        { path = 'snacks.nvim', words = { 'Snacks' } },
+        { path = 'lazy.nvim', words = { 'Util' } },
       },
     },
   },
