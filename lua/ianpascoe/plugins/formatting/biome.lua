@@ -17,18 +17,12 @@ local supported = {
 
 return {
   {
-    'WhoIsSethDaniel/mason-tool-installer.nvim',
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed or {}, { 'biome' })
-    end,
-  },
-  {
     'neovim/nvim-lspconfig',
-    opts = function(_, opts)
-      opts.servers = opts.servers or {}
-      opts.servers.biome = {}
-    end,
+    opts = {
+      servers = {
+        biome = {},
+      },
+    },
   },
   {
     'stevearc/conform.nvim',

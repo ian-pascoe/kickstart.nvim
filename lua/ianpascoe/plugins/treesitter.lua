@@ -2,6 +2,7 @@ return {
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
+    cmd = { 'TSInstall', 'TSInstallSync', 'TSUpdate', 'TSUpdateSync' },
     event = { 'LazyFile', 'VeryLazy' },
     init = function(plugin)
       -- PERF: add nvim-treesitter queries to the rtp and it's custom query predicates early
@@ -12,12 +13,12 @@ return {
       require('lazy.core.loader').add_to_rtp(plugin)
       require 'nvim-treesitter.query_predicates'
     end,
-    cmd = { 'TSUpdateSync', 'TSUpdate', 'TSInstall' },
-    opts = function(_, opts)
-      opts.highlight = vim.tbl_deep_extend('force', opts.highlight or {}, { enable = true })
-      opts.indent = vim.tbl_deep_extend('force', opts.indent or {}, { enable = true })
-      opts.ensure_installed = opts.ensure_installed or {}
-    end,
+    opts_extend = { 'ensure_installed' },
+    opts = {
+      highlight = { enable = true },
+      indent = { enable = true },
+      ensure_installed = {},
+    },
     config = function(_, opts)
       if type(opts.ensure_installed) == 'table' then
         opts.ensure_installed = Util.list.dedup(opts.ensure_installed)

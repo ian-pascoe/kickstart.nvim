@@ -1,16 +1,13 @@
 return {
   {
     'nvim-treesitter/nvim-treesitter',
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, { 'javascript', 'jsdoc', 'typescript', 'tsx' })
-    end,
+    opts = {
+      ensure_installed = { 'javascript', 'jsdoc', 'typescript', 'tsx' },
+    },
   },
   {
     'neovim/nvim-lspconfig',
     opts = function(_, opts)
-      opts.servers = opts.servers or {}
-
       local tsSettings = {
         updateImportsOnFileMove = { enabled = 'always' },
         suggest = {
@@ -26,6 +23,7 @@ return {
         },
       }
 
+      opts.servers = opts.servers or {}
       opts.servers.vtsls = {
         vtsls = {
           -- explicitly add default filetypes, so that we can extend

@@ -1,10 +1,9 @@
 return {
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
-    dependencies = {
-      'echasnovski/mini.icons',
-    },
     event = 'VeryLazy',
+    dependencies = { 'echasnovski/mini.icons' },
+    opts_extend = { 'spec' },
     opts = {
       preset = 'helix',
       -- delay between pressing a key and opening which-key (milliseconds)
@@ -62,6 +61,7 @@ return {
         { '<leader>ao', group = '[O]pencode' },
         { '<leader>ac', group = '[C]ode Companion' },
         { '<leader>h', group = '[H]arpoon' },
+        { '<leader>q', group = '[Q]uit' },
         { '[', group = 'prev' },
         { ']', group = 'next' },
         { 'g', group = 'goto' },

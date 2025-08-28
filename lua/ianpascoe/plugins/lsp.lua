@@ -5,20 +5,41 @@ return {
     build = ':MasonUpdate',
     cmd = 'Mason',
     opts = {},
-    config = function(_, opts)
-      require('mason').setup(opts)
-      Util.keymap.set('n', '<leader>cm', '<cmd>Mason<cr>', { desc = '[M]ason' })
-    end,
+    keys = {
+      { '<leader>cm', '<cmd>Mason<cr>', desc = '[M]ason' },
+    },
   },
   {
     'WhoIsSethDaniel/mason-tool-installer.nvim',
     build = ':MasonToolsUpdate',
     cmd = { 'MasonToolsInstall', 'MasonToolsInstallSync', 'MasonToolsUpdate', 'MasonToolsUpdateSync', 'MasonToolsClean' },
     dependencies = { 'mason-org/mason.nvim' },
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-    end,
+    opts_extend = { 'ensure_installed' },
+    opts = {
+      ensure_installed = {},
+    },
     config = function(_, opts)
+      -- Add LSP servers to ensure_installed that are set up in nvim-lspconfig and managed by mason-lspconfig
+      opts.ensure_installed = opts.ensure_installed or {}
+      local lspPlugin = require('lazy.core.config').spec.plugins['neovim/nvim-lspconfig']
+      if lspPlugin then
+        local Plugin = require 'lazy.core.plugin'
+        local lspPluginOpts = Plugin.values(lspPlugin, 'opts', false)
+        if lspPluginOpts and lspPluginOpts.servers then
+          local all_mslp_servers = vim.tbl_keys(require('mason-lspconfig.mappings').get_mason_map().lspconfig_to_package)
+          for server, server_opts in pairs(lspPluginOpts.servers) do
+            if server_opts then
+              server_opts = server_opts == true and {} or server_opts
+              if server_opts.enabled ~= false and server_opts.mason ~= false and vim.tbl_contains(all_mslp_servers, server) then
+                opts.ensure_installed[#opts.ensure_installed + 1] = server
+              end
+            end
+          end
+        end
+      end
+
+      Util.info('Ensuring mason tools are installed: ' .. table.concat(opts.ensure_installed, ', '),
+        { title = 'Mason Tools' })
       require('mason-tool-installer').setup(opts)
       vim.cmd.MasonToolsUpdate()
 
@@ -51,11 +72,11 @@ return {
       },
       'saghen/blink.cmp',
     },
-    opts = function(_, opts)
-      opts.servers = opts.servers or {}
-      opts.capabilities = opts.capabilities or {}
-      opts.setup = opts.setup or {}
-    end,
+    opts = {
+      servers = {},
+      setup = {},
+      capabilities = {},
+    },
     config = function(_, opts)
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('lsp_attach', { clear = true }),
@@ -195,7 +216,7 @@ return {
       if mtiPlugin then
         local Plugin = require 'lazy.core.plugin'
         local mtiPluginOpts = Plugin.values(mtiPlugin, 'opts', false)
-        ensure_installed = vim.tbl_deep_extend('force', ensure_installed, mtiPluginOpts.ensure_installed or {})
+        vim.list_extend(ensure_installed, mtiPluginOpts.ensure_installed or {})
       end
 
       require('mason-tool-installer').setup {
@@ -209,7 +230,5 @@ return {
       }
     end,
   },
-  {
-    import = 'ianpascoe.plugins.lang',
-  },
+  { import = 'ianpascoe.plugins.lang' },
 }
