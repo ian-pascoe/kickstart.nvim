@@ -61,9 +61,9 @@ return {
       end, { desc = 'Open Files' })
 
       -- Shortcut for searching your Neovim configuration files
-      SpiritVim.keymap.set('n', '<leader>sn', function()
+      SpiritVim.keymap.set('n', '<leader>sc', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
-      end, { desc = 'Neovim files' })
+      end, { desc = 'Neovim config files' })
 
       SpiritVim.keymap.set(
         'v',

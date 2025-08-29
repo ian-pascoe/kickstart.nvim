@@ -55,6 +55,12 @@ function M.init()
   end
   M.did_init = true
 
+  -- delay notifications till vim.notify was replaced or after 500ms
+  SpiritVim.lazy_notify()
+
+  -- load options here, before lazy init while sourcing plugin modules
+  -- this is needed to make sure options will be correctly applied
+  -- after installing missing plugins
   M.load 'options'
 
   -- defer built-in clipboard handling: "xsel" and "pbcopy" can be slow

@@ -107,22 +107,17 @@ return {
       local harpoon_ui = require 'harpoon.ui'
       local harpoon_mark = require 'harpoon.mark'
 
-      SpiritVim.keymap.set('n', '<leader>ha', harpoon_mark.add_file, { desc = '[A]dd file' })
+      SpiritVim.keymap.set('n', '<leader>ha', harpoon_mark.add_file, { desc = 'Add file' })
       SpiritVim.keymap.set('n', '<leader>hh', harpoon_ui.toggle_quick_menu, { desc = 'Toggle' })
-      SpiritVim.keymap.set('n', '<leader>hs', '<CMD>Telescope harpoon marks<CR>', { desc = '[S]earch marked' })
-      SpiritVim.keymap.set('n', '[h', harpoon_ui.nav_prev, { desc = 'Harpoon: navigate prev' })
-      SpiritVim.keymap.set('n', ']h', harpoon_ui.nav_next, { desc = 'Harpoon: navigate next' })
-      -- Dynamic keymap for <leader>h{number} to navigate to harpoon file by index
-      SpiritVim.keymap.set('n', '<leader>h', function()
-        local num = vim.fn.getchar()
-        local char = vim.fn.nr2char(num)
-        local file_index = tonumber(char)
-        if file_index and file_index >= 1 and file_index <= 9 then
-          harpoon_ui.nav_file(file_index)
-        else
-          print('Invalid harpoon file number: ' .. char)
-        end
-      end, { desc = 'Harpoon: Navigate to file by number (1-9)' })
+      SpiritVim.keymap.set('n', '<leader>hs', '<CMD>Telescope harpoon marks<CR>', { desc = 'Search marked' })
+      SpiritVim.keymap.set('n', '[h', harpoon_ui.nav_prev, { desc = 'Harpoon prev' })
+      SpiritVim.keymap.set('n', ']h', harpoon_ui.nav_next, { desc = 'Harpoon next' })
+      -- Static keymaps for <leader>h{1-9} to navigate to harpoon files
+      for i = 1, 9 do
+        SpiritVim.keymap.set('n', '<leader>h' .. i, function()
+          harpoon_ui.nav_file(i)
+        end, { desc = 'Navigate to harpoon file ' .. i })
+      end
     end,
   },
 }

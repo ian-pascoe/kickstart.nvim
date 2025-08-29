@@ -1,24 +1,59 @@
 return {
-  { -- icons
-    'echasnovski/mini.icons',
-    lazy = true,
+  { -- Buffer tabs
+    'akinsho/bufferline.nvim',
+    event = 'VeryLazy',
+    keys = {
+      { '<leader>bp', '<Cmd>BufferLineTogglePin<CR>', desc = 'Toggle Pin' },
+      { '<leader>bP', '<Cmd>BufferLineGroupClose ungrouped<CR>', desc = 'Delete Non-Pinned Buffers' },
+      { '<leader>br', '<Cmd>BufferLineCloseRight<CR>', desc = 'Delete Buffers to the Right' },
+      { '<leader>bl', '<Cmd>BufferLineCloseLeft<CR>', desc = 'Delete Buffers to the Left' },
+      { '<S-h>', '<cmd>BufferLineCyclePrev<cr>', desc = 'Prev Buffer' },
+      { '<S-l>', '<cmd>BufferLineCycleNext<cr>', desc = 'Next Buffer' },
+      { '[b', '<cmd>BufferLineCyclePrev<cr>', desc = 'Prev Buffer' },
+      { ']b', '<cmd>BufferLineCycleNext<cr>', desc = 'Next Buffer' },
+      { '[B', '<cmd>BufferLineMovePrev<cr>', desc = 'Move buffer prev' },
+      { ']B', '<cmd>BufferLineMoveNext<cr>', desc = 'Move buffer next' },
+    },
+    ---@type bufferline.Config
+    ---@diagnostic disable-next-line missing-fields
     opts = {
-      file = {
-        ['.keep'] = { glyph = '󰊢 ', hl = 'MiniIconsGrey' },
-        ['devcontainer.json'] = { glyph = ' ', hl = 'MiniIconsAzure' },
-      },
-      filetype = {
-        dotenv = { glyph = ' ', hl = 'MiniIconsYellow' },
+      options = {
+        close_command = function(n)
+          Snacks.bufdelete(n)
+        end,
+        right_mouse_command = function(n)
+          Snacks.bufdelete(n)
+        end,
+        diagnostics = 'nvim_lsp',
+        always_show_bufferline = false,
+        offsets = { { filetype = 'snacks_layout_box' } },
+        custom_filter = function(bufnr)
+          local buftype = vim.api.nvim_buf_get_option(bufnr, 'buftype')
+          local bufname = vim.api.nvim_buf_get_name(bufnr)
+
+          -- Ignore nofile, terminal, and oil buffers
+          if buftype == 'nofile' or bufname:match '^term://' or bufname:match '^oil://' then
+            return false -- Exclude this buffer from bufferline
+          end
+
+          -- Include other buffers
+          return true
+        end,
       },
     },
-    init = function()
-      package.preload['nvim-web-devicons'] = function()
-        require('mini.icons').mock_nvim_web_devicons()
-        return package.loaded['nvim-web-devicons']
-      end
+    config = function(_, opts)
+      require('bufferline').setup(opts)
+      -- Fix bufferline when restoring a session
+      vim.api.nvim_create_autocmd({ 'BufAdd', 'BufDelete' }, {
+        callback = function()
+          vim.schedule(function()
+            pcall(nvim_bufferline)
+          end)
+        end,
+      })
     end,
   },
-  {
+  { -- statusline
     'nvim-lualine/lualine.nvim',
     event = 'VeryLazy',
     init = function()
